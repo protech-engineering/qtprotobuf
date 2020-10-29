@@ -292,6 +292,7 @@ const char *Templates::ClientMethodDeclarationSyncTemplate = "QtProtobuf::QGrpcS
 const char *Templates::ClientMethodDeclarationAsyncTemplate = "QtProtobuf::QGrpcAsyncReplyShared $method_name$(const $param_type$ &$param_name$);\n";
 const char *Templates::ClientMethodDeclarationAsync2Template = "Q_INVOKABLE void $method_name$(const $param_type$ &$param_name$, const QObject *context, const std::function<void(QtProtobuf::QGrpcAsyncReplyShared)> &callback);\n";
 const char *Templates::ClientMethodDeclarationQmlTemplate = "Q_INVOKABLE void $method_name$($param_type$ *$param_name$, const QJSValue &callback, const QJSValue &errorCallback);\n";
+const char *Templates::ClientMethodDeclarationQml2Template = "Q_INVOKABLE void $method_name$(const QJSValue &value, const QJSValue &callback, const QJSValue &errorCallback);\n";
 
 const char *Templates::ServerMethodDeclarationTemplate = "Q_INVOKABLE virtual $return_type$ $method_name$(const $param_type$ &$param_name$) = 0;\n";
 
@@ -339,6 +340,32 @@ const char *Templates::ClientMethodDefinitionQmlTemplate = "\nvoid $classname$::
                                                            "        QJSValue(errorCallback).call(QJSValueList{jsEngine->toScriptValue(status)});\n"
                                                            "    });\n"
                                                            "}\n";
+const char *Templates::ClientMethodDefinitionQml2Template = "\nvoid $classname$::$method_name$(const QJSValue &value, const QJSValue &callback, const QJSValue &errorCallback)\n"
+                                                            "{\n"
+                                                            "    if (!value.is$param_type_internal$()) {\n"
+                                                            "        qProtoWarning() << \"Unable to call $classname$::$method_name$, wrong value type\";\n"
+                                                            "        return;\n"
+                                                            "    }\n\n"
+                                                            "    std::shared_ptr<$param_type$> $param_name$(new $param_type$(value.to$param_type_internal$()));\n\n"
+                                                            "    if (!callback.isCallable()) {\n"
+                                                            "        qProtoWarning() << \"Unable to call $classname$::$method_name$, callback is not callable\";\n"
+                                                            "        return;\n"
+                                                            "    }\n\n"
+                                                            "    QJSEngine *jsEngine = qjsEngine(this);\n"
+                                                            "    if (jsEngine == nullptr) {\n"
+                                                            "        qProtoWarning() << \"Unable to call $classname$::$method_name$, it's only callable from JS engine context\";\n"
+                                                            "        return;\n"
+                                                            "    }\n\n"
+                                                            "    QtProtobuf::QGrpcAsyncReplyShared reply = call(\"$method_name$\", *$param_name$);\n"
+                                                            "    reply->subscribe(jsEngine, [this, reply, callback, jsEngine, $param_name$]() {\n"
+                                                            "        auto result = new $return_type$(reply->read<$return_type$>());\n"
+                                                            "        qmlEngine(this)->setObjectOwnership(result, QQmlEngine::JavaScriptOwnership);\n"
+                                                            "        QJSValue(callback).call(QJSValueList{jsEngine->toScriptValue(result)});\n"
+                                                            "    }, [errorCallback, jsEngine, $param_name$](const QGrpcStatus &status) {\n"
+                                                            "        QJSValue(errorCallback).call(QJSValueList{jsEngine->toScriptValue(status)});\n"
+                                                            "    });\n"
+                                                            "}\n";
+
 const char *Templates::RegisterSerializersTemplate = "qRegisterProtobufType<$classname$>();\n";
 const char *Templates::RegisterEnumSerializersTemplate = "qRegisterProtobufEnumType<$full_type$>();\n";
 const char *Templates::RegistrarTemplate = "static QtProtobuf::ProtoTypeRegistrar<$classname$> ProtoTypeRegistrar$classname$(qRegisterProtobufType<$classname$>);\n";
@@ -351,6 +378,7 @@ const char *Templates::ClientMethodSignalDeclarationTemplate = "Q_SIGNAL void $m
 const char *Templates::ClientMethodServerStreamDeclarationTemplate = "QtProtobuf::QGrpcSubscriptionShared subscribe$method_name_upper$Updates(const $param_type$ &$param_name$);\n";
 const char *Templates::ClientMethodServerStream2DeclarationTemplate = "QtProtobuf::QGrpcSubscriptionShared subscribe$method_name_upper$Updates(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$);\n";
 const char *Templates::ClientMethodServerStreamQmlDeclarationTemplate = "Q_INVOKABLE QtProtobuf::QGrpcSubscriptionShared qmlSubscribe$method_name_upper$Updates_p($param_type$ *$param_name$, $return_type$ *$return_name$);\n";
+const char *Templates::ClientMethodServerStreamQml2DeclarationTemplate = "Q_INVOKABLE QtProtobuf::QGrpcSubscriptionShared qmlSubscribe$method_name_upper$Updates_p(const QJSValue &value, $return_type$ *$return_name$);\n";
 
 const char *Templates::ClientMethodServerStreamDefinitionTemplate = "QtProtobuf::QGrpcSubscriptionShared $classname$::subscribe$method_name_upper$Updates(const $param_type$ &$param_name$)\n"
                                                                     "{\n"
@@ -363,6 +391,15 @@ const char *Templates::ClientMethodServerStream2DefinitionTemplate = "QtProtobuf
 const char *Templates::ClientMethodServerStreamQmlDefinitionTemplate = "QtProtobuf::QGrpcSubscriptionShared $classname$::qmlSubscribe$method_name_upper$Updates_p($param_type$ *$param_name$, $return_type$ *$return_name$)\n"
                                                                        "{\n"
                                                                        "    return subscribe(\"$method_name$\", *$param_name$, QPointer<$return_type$>($return_name$));\n"
+                                                                       "}\n";
+const char *Templates::ClientMethodServerStreamQml2DefinitionTemplate = "QtProtobuf::QGrpcSubscriptionShared $classname$::qmlSubscribe$method_name_upper$Updates_p(const QJSValue &value, $return_type$ *$return_name$)\n"
+                                                                       "{\n"
+                                                                       "    if (!value.is$param_type_internal$()) {\n"
+                                                                       "        qProtoWarning() << \"Unable to call $classname$::$method_name$, wrong value type\";\n"
+                                                                       "        return;\n"
+                                                                       "    }\n\n"
+                                                                       "    $param_type$ $param_name$(value.to$param_type_internal$());\n"
+                                                                       "    return subscribe(\"$method_name$\", $param_name$, QPointer<$return_type$>($return_name$));\n"
                                                                        "}\n";
 
 const char *Templates::ListSuffix = "Repeated";

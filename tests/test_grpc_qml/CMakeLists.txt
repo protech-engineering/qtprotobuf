@@ -15,10 +15,10 @@ if(QT_PROTOBUF_NATIVE_GRPC_CHANNEL)
     add_executable(qtgrpc_qml_test_grpc_socket ${MOC_SOURCES} grpc_socket.cpp ${QML_FILES})
 endif()
 
-target_link_libraries(qtgrpc_qml_test_http2 PRIVATE Qt5::Qml Qt5::Quick Qt5::Test Qt5::QuickTest QtProtobufProject::QtGrpc)
+target_link_libraries(qtgrpc_qml_test_http2 PRIVATE Qt5::Qml Qt5::Quick Qt5::Test Qt5::QuickTest QtProtobufProject::QtGrpc ${QT_PROTOBUF_PROJECT}::QtProtobufWellKnownTypes)
 if(QT_PROTOBUF_NATIVE_GRPC_CHANNEL)
-    target_link_libraries(qtgrpc_qml_test_grpc_http PRIVATE Qt5::Qml Qt5::Quick Qt5::Test Qt5::QuickTest QtProtobufProject::QtGrpc)
-    target_link_libraries(qtgrpc_qml_test_grpc_socket PRIVATE Qt5::Qml Qt5::Quick Qt5::Test Qt5::QuickTest QtProtobufProject::QtGrpc)
+    target_link_libraries(qtgrpc_qml_test_grpc_http PRIVATE Qt5::Qml Qt5::Quick Qt5::Test Qt5::QuickTest QtProtobufProject::QtGrpc ${QT_PROTOBUF_PROJECT}::QtProtobufWellKnownTypes)
+    target_link_libraries(qtgrpc_qml_test_grpc_socket PRIVATE Qt5::Qml Qt5::Quick Qt5::Test Qt5::QuickTest QtProtobufProject::QtGrpc ${QT_PROTOBUF_PROJECT}::QtProtobufWellKnownTypes)
 endif()
 
 if(QT_PROTOBUF_STATIC)

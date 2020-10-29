@@ -88,6 +88,9 @@ void ClientDeclarationPrinter::printClientMethodsDeclaration()
             mPrinter->Print(parameters, Templates::ClientMethodDeclarationAsync2Template);
             if (GeneratorOptions::instance().hasQml()) {
                 mPrinter->Print(parameters, Templates::ClientMethodDeclarationQmlTemplate);
+                if (parameters.count("param_type_internal")) {
+                    mPrinter->Print(parameters, Templates::ClientMethodDeclarationQml2Template);
+                }
             }
         }
         mPrinter->Print("\n");
@@ -102,6 +105,9 @@ void ClientDeclarationPrinter::printClientMethodsDeclaration()
         if (method->server_streaming()) {
             if (GeneratorOptions::instance().hasQml()) {
                 mPrinter->Print(parameters, Templates::ClientMethodServerStreamQmlDeclarationTemplate);
+                if (parameters.count("param_type_internal")) {
+                    mPrinter->Print(parameters, Templates::ClientMethodServerStreamQml2DeclarationTemplate);
+                }
             }
         }
     }

@@ -1,6 +1,8 @@
 syntax = "proto3";
 
 import "simpletest.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
 
 package qtprotobufnamespace.tests;
 
@@ -12,4 +14,12 @@ service TestService {
   rpc testMethodBlobServerStream(BlobMessage) returns (stream BlobMessage) {}
   rpc testMethodStatusMessage(SimpleStringMessage) returns (SimpleStringMessage) {}
   rpc testMethodNonCompatibleArgRet(SimpleIntMessage) returns (SimpleStringMessage) {}
-} 
+
+  rpc testMethodBoolValue(google.protobuf.BoolValue) returns (google.protobuf.Empty) {}
+  rpc testMethodDoubleValue(google.protobuf.DoubleValue) returns (google.protobuf.Empty) {}
+  rpc testMethodStringValue(google.protobuf.StringValue) returns (google.protobuf.Empty) {}
+  rpc testMethodFloatValue(google.protobuf.FloatValue) returns (google.protobuf.Empty) {}
+  rpc testMethodInt32Value(google.protobuf.Int32Value) returns (google.protobuf.Empty) {}
+  rpc testMethodUInt32Value(google.protobuf.UInt32Value) returns (google.protobuf.Empty) {}
+  rpc testMethodEmptyValue(google.protobuf.Empty) returns (google.protobuf.Empty) {}
+}

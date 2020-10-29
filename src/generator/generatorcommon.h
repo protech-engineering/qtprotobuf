@@ -108,6 +108,8 @@ struct common {
         return containing == message->containing_type();
     }
     static const ::google::protobuf::Descriptor *findHighestMessage(const ::google::protobuf::Descriptor *message);
+
+	static const std::map<std::string, std::string> typesProtobufToQJSValueMap;
 };
 
 }

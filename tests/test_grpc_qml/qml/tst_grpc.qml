@@ -206,4 +206,70 @@ TestCase {
         compare(subscriptionLoader.item.updateCount, 1, "Subscription failed, update was not called right amount times")
         subscriptionLoader.active = false;
     }
+
+    function test_easyTypesFunctions() {
+        var success = false;
+
+        TestServiceClient.testMethodBoolValue(true, function(ret) {
+            success = true;
+        }, function (status) {
+            success = false;
+        });
+        wait(300);
+        compare(success, true, "testMethodBoolValue does not accept bool value")
+
+
+        TestServiceClient.testMethodDoubleValue(1.2, function(ret) {
+            success = true;
+        }, function (status) {
+            success = false;
+        });
+        wait(300);
+        compare(success, true, "testMethodDoubleValue does not accept double value")
+
+
+        TestServiceClient.testMethodStringValue("hello", function(ret) {
+            success = true;
+        }, function (status) {
+            success = false;
+        });
+        wait(300);
+        compare(success, true, "testMethodStringValue does not accept string value")
+
+
+        TestServiceClient.testMethodFloatValue(1.2, function(ret) {
+            success = true;
+        }, function (status) {
+            success = false;
+        });
+        wait(300);
+        compare(success, true, "testMethodFloatValue does not accept float value")
+
+
+        TestServiceClient.testMethodInt32Value(1234, function(ret) {
+            success = true;
+        }, function (status) {
+            success = false;
+        });
+        wait(300);
+        compare(success, true, "testMethodInt32Value does not accept int value")
+
+
+        TestServiceClient.testMethodUInt32Value(1234, function(ret) {
+            success = true;
+        }, function (status) {
+            success = false;
+        });
+        wait(300);
+        compare(success, true, "testMethodUInt32Value does not accept int value")
+
+
+        TestServiceClient.testMethodEmptyValue(null, function(ret) {
+            success = true;
+        }, function (status) {
+            success = false;
+        });
+        wait(300);
+        compare(success, true, "testMethodEmptyValue does not accept null value")
+    }
 }

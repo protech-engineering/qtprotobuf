@@ -31,9 +31,18 @@
 using namespace ::QtProtobuf::generator;
 using namespace ::google::protobuf;
 
-std::string common::getNamespacesString(const std::vector<std::string> &namespacesList, const std::string &separator)
-{
-    std::string namespaces;
+const std::map<std::string, std::string> common::typesProtobufToQJSValueMap = {
+	{"google::protobuf::BoolValue", "Bool"},
+    {"google::protobuf::DoubleValue", "Number"},
+	{"google::protobuf::StringValue", "String"},
+    {"google::protobuf::FloatValue", "Number"},
+    {"google::protobuf::Int32Value", "Number"},
+    {"google::protobuf::UInt32Value", "Number"},
+	{"google::protobuf::EmptyValue", "Null"},
+};
+
+std::string common::getNamespacesString(const std::vector<std::string> &namespacesList, const std::string &separator) {
+	std::string namespaces;
     for (auto namespacePart : namespacesList) {
         namespaces += namespacePart + separator;
     }
@@ -406,7 +415,7 @@ MethodMap common::produceMethodMap(const MethodDescriptor *method, const std::st
     methodNameUpper[0] =  static_cast<char>(::toupper(methodNameUpper[0]));
     utils::replace(inputTypeName, ".", "::");
     utils::replace(outputTypeName, ".", "::");
-    return {{"classname", scope},
+    MethodMap map{{"classname", scope},
                   {"return_type", outputTypeName},
                   {"method_name", methodName},
                   {"method_name_upper", methodNameUpper},
@@ -414,6 +423,10 @@ MethodMap common::produceMethodMap(const MethodDescriptor *method, const std::st
                   {"param_name", "arg"},
                   {"return_name", "ret"}
                  };
+    if (common::typesProtobufToQJSValueMap.count(inputTypeName)) {
+        map["param_type_internal"] = common::typesProtobufToQJSValueMap.at(inputTypeName);
+    }
+    return map;
 }
 
 void common::iterateMessages(const ::google::protobuf::FileDescriptor *file, std::function<void(const ::google::protobuf::Descriptor *)> callback)

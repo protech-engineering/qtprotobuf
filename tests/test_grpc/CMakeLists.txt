@@ -11,6 +11,9 @@ add_test_target(TARGET qtgrpc_secure_test
 add_target_windeployqt(TARGET qtgrpc_secure_test
     QML_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
+target_link_libraries(qtgrpc_test PRIVATE ${QT_PROTOBUF_PROJECT}::QtProtobufWellKnownTypes)
+target_link_libraries(qtgrpc_secure_test PRIVATE ${QT_PROTOBUF_PROJECT}::QtProtobufWellKnownTypes)
+
 # servers
 add_subdirectory(echoserver)
 add_subdirectory(secureechoserver)
